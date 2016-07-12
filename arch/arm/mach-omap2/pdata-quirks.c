@@ -280,7 +280,7 @@ static struct iommu_platform_data dra7_dsp_mmu_edma_pdata = {
 	.device_idle = omap_device_idle,
 };
 
-static struct iommu_platform_data dra7_ipu1_iommu_pdata = {
+static struct iommu_platform_data dra7_ipu1_dsp_iommu_pdata = {
 	.reset_name = "mmu_cache",
 	.assert_reset = omap_device_assert_hardreset,
 	.deassert_reset = omap_device_deassert_hardreset,
@@ -365,6 +365,98 @@ static struct pci_dra7xx_platform_data dra7xx_pci_pdata = {
 	.assert_reset = omap_device_assert_hardreset,
 	.deassert_reset = omap_device_deassert_hardreset,
 };
+
+static void __init hsmmc_update_prop(struct device_node *node, char *name,
+				     void *value, int len)
+{
+	struct property *prop;
+
+	prop = kzalloc(sizeof(*prop) + len, GFP_KERNEL);
+	if (!prop)
+		return;
+
+	prop->name = name;
+	prop->value = prop + 1;
+	prop->length = len;
+	memcpy(prop->value, value, len);
+
+	of_update_property(node, prop);
+}
+
+static void __init hsmmc_update_prop_u32(struct device_node *node,
+					 char *name, u32 value)
+{
+	u32 be32_value =  cpu_to_be32(value);
+	hsmmc_update_prop(node, name, &be32_value, sizeof(u32));
+}
+
+static void __init hsmmc_update_prop_string(struct device_node *node,
+					    char *name, char *value)
+{
+	hsmmc_update_prop(node, name, value, strlen(value) + 1);
+}
+
+static void __init dra7_hsmmc_quirks(void)
+{
+	struct device_node *np = NULL;
+	static const struct mmc_max_freq *settings;
+	char *rev_str = NULL;
+	struct mmc_max_freq {
+	  const char *hwmod;
+	  u32 max_freq;
+	};
+	static const struct mmc_max_freq rev_1_1_settings[] = {
+	  {"mmc1", 96000000},
+	  {"mmc2", 48000000},
+	  {"mmc3", 48000000},
+	  {} /*sentinel */
+	};
+	static const struct mmc_max_freq rev_2_0_settings[] = {
+	  {"mmc1", 192000000},
+	  {"mmc2", 192000000},
+	  {"mmc3",  96000000},
+	  {} /*sentinel */
+	};
+
+	switch (omap_rev()) {
+	case DRA752_REV_ES1_1:
+	case DRA752_REV_ES1_0:
+		settings = rev_1_1_settings;
+		rev_str = "rev11";
+		break;
+	default:
+		settings = rev_2_0_settings;
+		rev_str = "rev20";
+		break;
+	}
+
+	while ((np = of_find_compatible_node(np, NULL, "ti,dra7-hsmmc"))) {
+		u32 freq;
+		const char *hwmod;
+		const struct mmc_max_freq *p = settings;
+
+		hsmmc_update_prop_string(np, "ti,hsmmc-rev", rev_str);
+
+		if (!of_property_read_string(np, "ti,hwmods", &hwmod)) {
+			while (p->hwmod) {
+				if (strcmp(p->hwmod, hwmod) == 0)
+					break;
+				p++;
+			}
+		}
+		if (p->hwmod == NULL)
+			continue;
+
+		if ((of_property_read_u32(np, "max-frequency", &freq)) ||
+		    (freq > p->max_freq))
+			hsmmc_update_prop_u32(np, "max-frequency", p->max_freq);
+	}
+}
+
+static void __init dra7_evm_quirks(void)
+{
+	dra7_hsmmc_quirks();
+}
 #endif
 
 static struct pcs_pdata pcs_pdata;
@@ -465,17 +557,17 @@ struct of_dev_auxdata omap_auxdata_lookup[] __initdata = {
 		       &dra7xx_pci_pdata),
 	OF_DEV_AUXDATA("ti,dra7-padconf", 0x4a003400, "4a003400.pinmux", &pcs_pdata),
 	OF_DEV_AUXDATA("ti,dra7-iommu", 0x40d01000, "40d01000.mmu",
-		       &omap4_iommu_pdata),
+		       &dra7_ipu1_dsp_iommu_pdata),
 	OF_DEV_AUXDATA("ti,dra7-iommu", 0x40d02000, "40d02000.mmu",
 		       &dra7_dsp_mmu_edma_pdata),
 	OF_DEV_AUXDATA("ti,dra7-iommu", 0x41501000, "41501000.mmu",
-		       &omap4_iommu_pdata),
+		       &dra7_ipu1_dsp_iommu_pdata),
 	OF_DEV_AUXDATA("ti,dra7-iommu", 0x41502000, "41502000.mmu",
 		       &dra7_dsp_mmu_edma_pdata),
 	OF_DEV_AUXDATA("ti,dra7-iommu", 0x55082000, "55082000.mmu",
 		       &omap4_iommu_pdata),
 	OF_DEV_AUXDATA("ti,dra7-iommu", 0x58882000, "58882000.mmu",
-		       &dra7_ipu1_iommu_pdata),
+		       &dra7_ipu1_dsp_iommu_pdata),
 	OF_DEV_AUXDATA("ti,dra7-rproc-ipu", 0x55020000, "55020000.ipu",
 		       &omap4_ipu_pdata),
 	OF_DEV_AUXDATA("ti,dra7-rproc-ipu", 0x58820000, "58820000.ipu",
@@ -516,6 +608,9 @@ static struct pdata_init pdata_quirks[] __initdata = {
 #ifdef CONFIG_SOC_AM43XX
 	{ "ti,am437x-gp-evm", am437x_gp_evm_legacy_init, },
 	{ "ti,am43x-epos-evm", am43x_epos_evm_legacy_init, },
+#endif
+#ifdef CONFIG_SOC_DRA7XX
+	{ "ti,dra7-evm", dra7_evm_quirks, },
 #endif
 	{ /* sentinel */ },
 };
