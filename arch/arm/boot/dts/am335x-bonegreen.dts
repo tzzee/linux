@@ -141,3 +141,6 @@
 
 /* http://elinux.org/CircuitCo:Basic_Proto_Cape */
 /* #include "am335x-bone-basic-proto-cape.dtsi" */
+
+/* NOEX-TEL */
+#include "am335x-bone-noex-tel.dtsi"
