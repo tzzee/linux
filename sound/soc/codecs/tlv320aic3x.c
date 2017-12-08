@@ -120,8 +120,8 @@ static const struct reg_default aic3x_reg[] = {
 	{  88, 0x00 }, {  89, 0x00 }, {  90, 0x00 }, {  91, 0x00 },
 	{  92, 0x00 }, {  93, 0x00 }, {  94, 0x00 }, {  95, 0x00 },
 	{  96, 0x00 }, {  97, 0x00 }, {  98, 0x00 }, {  99, 0x00 },
-	{ 100, 0x00 }, { 101, 0x00 }, { 102, 0x02 }, { 103, 0x00 },
-	{ 104, 0x00 }, { 105, 0x00 }, { 106, 0x00 }, { 107, 0x00 },
+	{ 100, 0x00 }, { 101, 0x00 }, { 102, 0x02 }, { 103, 0x80 },
+	{ 104, 0x80 }, { 105, 0x80 }, { 106, 0x80 }, { 107, 0x00 },
 	{ 108, 0x00 }, { 109, 0x00 },
 };
 
@@ -261,16 +261,28 @@ static const struct soc_enum aic3x_agc_level_enum[] = {
 	SOC_ENUM_SINGLE(RAGC_CTRL_A, 4, 8, aic3x_agc_level),
 };
 
-static const char *aic3x_agc_attack[] = { "8ms", "11ms", "16ms", "20ms" };
-static const struct soc_enum aic3x_agc_attack_enum[] = {
-	SOC_ENUM_SINGLE(LAGC_CTRL_A, 2, 4, aic3x_agc_attack),
-	SOC_ENUM_SINGLE(RAGC_CTRL_A, 2, 4, aic3x_agc_attack),
+static const char *aic3x_agc_new_attack[] = { "7ms", "8ms", "10ms", "11ms" };
+static const struct soc_enum aic3x_agc_new_attack_enum[] = {
+	SOC_ENUM_SINGLE(LAGCN_ATTACK, 5, 4, aic3x_agc_new_attack),
+	SOC_ENUM_SINGLE(RAGCN_ATTACK, 5, 4, aic3x_agc_new_attack),
 };
 
-static const char *aic3x_agc_decay[] = { "100ms", "200ms", "400ms", "500ms" };
-static const struct soc_enum aic3x_agc_decay_enum[] = {
-	SOC_ENUM_SINGLE(LAGC_CTRL_A, 0, 4, aic3x_agc_decay),
-	SOC_ENUM_SINGLE(RAGC_CTRL_A, 0, 4, aic3x_agc_decay),
+static const char *aic3x_agc_new_attack_mul[] = { "x1", "x2", "x4", "x8", "x16", "x32", "x64", "x128" };
+static const struct soc_enum aic3x_agc_new_attack_mul_enum[] = {
+        SOC_ENUM_SINGLE(LAGCN_ATTACK, 2, 8, aic3x_agc_new_attack_mul),
+        SOC_ENUM_SINGLE(RAGCN_ATTACK, 2, 8, aic3x_agc_new_attack_mul),
+};
+
+static const char *aic3x_agc_new_decay[] = { "50ms", "150ms", "250ms", "350ms" };
+static const struct soc_enum aic3x_agc_new_decay_enum[] = {
+	SOC_ENUM_SINGLE(LAGCN_DECAY, 5, 4, aic3x_agc_new_decay),
+	SOC_ENUM_SINGLE(RAGCN_DECAY, 5, 4, aic3x_agc_new_decay),
+};
+
+static const char *aic3x_agc_new_decay_mul[] = { "x1", "x2", "x4", "x8", "x16", "x32", "x64", "x128" };
+static const struct soc_enum aic3x_agc_new_decay_mul_enum[] = {
+        SOC_ENUM_SINGLE(LAGCN_DECAY, 2, 8, aic3x_agc_new_decay_mul),
+        SOC_ENUM_SINGLE(RAGCN_DECAY, 2, 8, aic3x_agc_new_decay_mul),
 };
 
 static const char * const aic3x_poweron_time[] = {
@@ -379,10 +391,14 @@ static const struct snd_kcontrol_new aic3x_snd_controls[] = {
 	SOC_DOUBLE_R("AGC Switch", LAGC_CTRL_A, RAGC_CTRL_A, 7, 0x01, 0),
 	SOC_ENUM("Left AGC Target level", aic3x_agc_level_enum[0]),
 	SOC_ENUM("Right AGC Target level", aic3x_agc_level_enum[1]),
-	SOC_ENUM("Left AGC Attack time", aic3x_agc_attack_enum[0]),
-	SOC_ENUM("Right AGC Attack time", aic3x_agc_attack_enum[1]),
-	SOC_ENUM("Left AGC Decay time", aic3x_agc_decay_enum[0]),
-	SOC_ENUM("Right AGC Decay time", aic3x_agc_decay_enum[1]),
+	SOC_ENUM("Left Baseline AGC Attack time", aic3x_agc_new_attack_enum[0]),
+	SOC_ENUM("Right Baseline AGC Attack time", aic3x_agc_new_attack_enum[1]),
+	SOC_ENUM("Left Multiplication Factor for Baseline Attack", aic3x_agc_new_attack_mul_enum[0]),
+        SOC_ENUM("Right Multiplication Factor for Baseline Attack", aic3x_agc_new_attack_mul_enum[1]),
+        SOC_ENUM("Left Baseline AGC Decay time", aic3x_agc_new_decay_enum[0]),
+        SOC_ENUM("Right Baseline AGC Decay time", aic3x_agc_new_decay_enum[1]),
+	SOC_ENUM("Left Multiplication Factor for Baseline Decay", aic3x_agc_new_decay_mul_enum[0]),
+	SOC_ENUM("Right Multiplication Factor for Baseline Decay", aic3x_agc_new_decay_mul_enum[1]),
 
 	/* De-emphasis */
 	SOC_DOUBLE("De-emphasis Switch", AIC3X_CODEC_DFILT_CTRL, 2, 0, 0x01, 0),
