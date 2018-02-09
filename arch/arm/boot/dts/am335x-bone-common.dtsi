@@ -52,6 +52,41 @@
 			linux,default-trigger = "mmc1";
 			default-state = "off";
 		};
+
+		led@6 {
+                        label = "noex:gpio:usb";
+                        gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
+                        linux,default-trigger = "none";
+                        default-state = "off";
+                };
+
+		led@7 {
+                        label = "noex:gpio:diag";
+                        gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;
+                        linux,default-trigger = "default-on";
+                        default-state = "off";
+                };
+
+		led@8 {
+                        label = "noex:gpio:power";
+                        gpios = <&gpio2 2 GPIO_ACTIVE_HIGH>;
+                        linux,default-trigger = "default-on";
+                        default-state = "off";
+                };
+
+		led@9 {
+                        label = "noex:gpio:lan";
+                        gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
+                        linux,default-trigger = "none";
+                        default-state = "off";
+                };
+
+		led@10 {
+                        label = "noex:gpio:internet";
+                        gpios = <&gpio0 27 GPIO_ACTIVE_HIGH>;
+                        linux,default-trigger = "none";
+                        default-state = "off";
+                };
 	};
 
 	vbat: fixedregulator@0 {
