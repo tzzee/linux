@@ -260,3 +260,33 @@
 &sham {
 	status = "okay";
 };
+
+&epwmss0 {
+	status = "okay";
+	ecap0: ecap@48300100 {
+		status = "okay";
+	};
+	ehrpwm0: ehrpwm@48300200 {
+		status = "okay";
+	};
+};
+
+&epwmss1 {
+	status = "okay";
+	ecap1: ecap@48302100 {
+		status = "okay";
+	};
+	ehrpwm1: ehrpwm@48302200 {
+		status = "okay";
+	};
+};
+
+&epwmss2 {
+	status = "okay";
+	ecap2: ecap@48304100 {
+		status = "okay";
+	};
+	ehrpwm2: ehrpwm@48304200 {
+		status = "okay";
+	};
+};
