@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2017 Noex-inc - http://www.noex-inc.co.jp/
+ */
+
+
+&ocp {
+       P8_10_pinmux {
+               mode = "gpio_pu";
+       };
+       P8_12_pinmux {
+               mode = "gpio_pu";
+       };
+       P8_14_pinmux {
+               mode = "gpio_pu";
+       };
+       P8_16_pinmux {
+               mode = "gpio_pu";
+       };
+       P8_18_pinmux {
+               mode = "gpio";
+       };
+       P8_19_pinmux {
+               mode = "gpio";
+       };
+       P8_34_pinmux {
+               mode = "pwm";
+       };
+       P8_36_pinmux {
+               mode = "pwm";
+       };
+       P8_45_pinmux {
+               mode = "pwm";
+       };
+};
