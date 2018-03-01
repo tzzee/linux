@@ -643,9 +643,9 @@ static const struct snd_soc_dapm_widget aic3x_dapm_widgets[] = {
 			 &aic3x_right_line1r_mux_controls),
 
 	/* Mic Bias */
-	SND_SOC_DAPM_SUPPLY("Mic Bias", MICBIAS_CTRL, 6, 0,
+	/*SND_SOC_DAPM_SUPPLY("Mic Bias", MICBIAS_CTRL, 6, 0,
 			 mic_bias_event,
-			 SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),
+			 SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),*/
 
 	SND_SOC_DAPM_OUTPUT("LLOUT"),
 	SND_SOC_DAPM_OUTPUT("RLOUT"),
