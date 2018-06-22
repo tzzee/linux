@@ -89,6 +89,28 @@
                 };
 	};
 
+	pwmleds {
+		compatible = "pwm-leds";
+                pwmled@0 {
+                        label = "noex:pwm:red";
+                        pwms = <&ehrpwm1 0 500000 2>;
+                        max-brightness = <255>;
+                        linux,default-trigger = "default-on";
+                };
+                pwmled@1 {
+                        label = "noex:pwm:green";
+                        pwms = <&ehrpwm1 1 500000 2>;
+                        max-brightness = <255>;
+                        linux,default-trigger = "default-on";
+                };
+                pwmled@2 {
+                        label = "noex:pwm:blue";
+                        pwms = <&ehrpwm2 0 500000 2>;
+                        max-brightness = <255>;
+                        linux,default-trigger = "default-on";
+                };
+	};
+
 	vbat: fixedregulator@0 {
 		compatible = "regulator-fixed";
 		regulator-name = "vbat";
