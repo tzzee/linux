@@ -1,0 +1,10 @@
+/*
+ * Copyright (C) 2017 Noex-inc - http://www.noex-inc.co.jp/
+ */
+
+
+&ocp {
+       P8_30_pinmux {
+               mode = "gpio_pu";
+       };
+};
